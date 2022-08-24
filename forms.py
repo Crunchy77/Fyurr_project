@@ -1,7 +1,16 @@
 from datetime import datetime
 from flask_wtf import Form
+from sqlalchemy import false
 from wtforms import StringField, SelectField, SelectMultipleField, DateTimeField, BooleanField
 from wtforms.validators import DataRequired, AnyOf, URL
+import re
+
+
+
+def check_phoneNum(number):
+    regex = re.compile('^([0-9]{3})[-. ]?([0-9]{3})[-. ]?([0-9]{4})$')
+    return regex.match(str(number))
+
 
 class ShowForm(Form):
     artist_id = StringField(
@@ -17,6 +26,17 @@ class ShowForm(Form):
     )
 
 class VenueForm(Form):
+    def validate_phone(form, field):
+        if not check_phoneNum(field.data):
+            field.errors.append('invalid Phone Number.')
+            return False
+        return True
+
+
+
+
+
+
     name = StringField(
         'name', validators=[DataRequired()]
     )
@@ -129,6 +149,12 @@ class VenueForm(Form):
 
 
 class ArtistForm(Form):
+    def validate_phone(form, field):
+        if not check_phoneNum(field.data):
+            field.errors.append('invalid Phone Number.')
+            return False
+        return True
+
     name = StringField(
         'name', validators=[DataRequired()]
     )
